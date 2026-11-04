@@ -10,6 +10,7 @@ import { ProvenanceBadge } from "@/components/ui/provenance-badge";
 import { Accent, SectionHeading } from "@/components/ui/section-heading";
 import { SideTag } from "@/components/ui/side-tag";
 
+import { Chapter } from "./chapter";
 import { LandingEyebrow } from "./landing-eyebrow";
 import { LANDING_SAMPLE, SAMPLE_ACCOUNTS, SAMPLE_ORDER, SAMPLE_POSITION } from "./sample-data";
 
@@ -137,9 +138,9 @@ const LIFT = ["lg:mt-0", "lg:mt-10", "lg:mt-2", "lg:mt-12"] as const;
 
 export function HowItWorks(): ReactNode {
   return (
-    <section aria-labelledby="how-it-works" className="flex flex-col gap-12 md:gap-16">
+    <Chapter labelledBy="how-it-works" className="gap-12 md:gap-14">
       <div className="flex flex-col gap-5">
-        <LandingEyebrow index={1}>How it works</LandingEyebrow>
+        <LandingEyebrow index={3}>How it works</LandingEyebrow>
         <SectionHeading
           id="how-it-works"
           title={
@@ -184,6 +185,6 @@ export function HowItWorks(): ReactNode {
           ))}
         </ol>
       </div>
-    </section>
+    </Chapter>
   );
 }

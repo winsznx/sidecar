@@ -37,3 +37,17 @@ export const SAMPLE_ROUTES = {
   A: { freeNow: "1,206.40", freeAfter: "1,156.08" },
   B: { freeNow: "600.00", freeAfter: "549.68" },
 } as const;
+
+/**
+ * The margin chapter's one price move, told twice. The same 1,000 USDso and the same BTC loss of
+ * 360 USDso: once inside one shared account, once with BTC in its own 400 USDso account.
+ * Remaining figures are deposit less loss; no protocol formula is involved.
+ */
+export const SAMPLE_MOVE = {
+  loss: "360",
+  shared: { deposit: "1,000", left: "640", depositUnits: 1000, lossUnits: 360 },
+  separate: {
+    A: { deposit: "600", left: "600", depositUnits: 600, lossUnits: 0 },
+    B: { deposit: "400", left: "40", depositUnits: 400, lossUnits: 360 },
+  },
+} as const;
