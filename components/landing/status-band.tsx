@@ -2,9 +2,11 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { Band } from "@/components/ui/band";
+import { cx } from "@/components/ui/cx";
 import { Button } from "@/components/ui/button";
 import { HIDEKI_CHAIN_ID } from "@/lib/dreamdex/types";
 
+import { LandingEyebrow } from "./landing-eyebrow";
 import { LiveHeadFigure } from "./live-head-figure";
 
 // The band's own grid dot (--sc-grid-dot on band) all but vanishes at this size, so the landing
@@ -21,7 +23,7 @@ export function StatusBand(): ReactNode {
   return (
     <Band
       aria-labelledby="testnet-status"
-      className={BAND_GRID}
+      className={cx(BAND_GRID, "lg:flex-1 lg:justify-between")}
       corners={{
         topStart: <span>Chain {HIDEKI_CHAIN_ID} · Somnia Hideki</span>,
         topEnd: <span>Testnet · paper funds only</span>,
@@ -31,6 +33,7 @@ export function StatusBand(): ReactNode {
     >
       <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end lg:gap-16">
         <div className="flex min-w-0 flex-col gap-8">
+          <LandingEyebrow index={8}>Testnet</LandingEyebrow>
           <h2 id="testnet-status" className="type-hero text-hero text-ink">
             Paper funds. Real blocks.
           </h2>

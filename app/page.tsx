@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 import { LandingPage } from "@/components/landing/landing-page";
+import { readRecordedRuns } from "@/components/landing/read-recorded-runs";
 
 export const metadata: Metadata = {
   title: "Sidecar",
@@ -10,5 +11,5 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage(): ReactNode {
-  return <LandingPage />;
+  return <LandingPage records={readRecordedRuns()} />;
 }

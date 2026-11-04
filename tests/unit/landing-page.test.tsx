@@ -1,9 +1,14 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, render, screen, within } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { NetworkMeta, NetworkStatus } from "@/components/chrome/network-status";
 import { LandingPage } from "@/components/landing/landing-page";
-import { LiveNetworkLine } from "@/components/landing/live-network-line";
+import type { LandingRecords } from "@/components/landing/recorded-runs-model";
 import { LANDING_CHECKS } from "@/components/landing/truth-checks";
+import { SiteHeader } from "@/components/ui/site-header";
+import { useChainStatus } from "@/hooks/use-sidecar-queries";
 
 const READ_AT = "2026-11-03T12:00:00.000Z";
 const NOW_MS = Date.parse(READ_AT) + 2_000;
@@ -19,7 +24,26 @@ const chainQuery = vi.hoisted(() => ({ current: null as ChainQueryStub | null })
 
 vi.mock("@/hooks/use-sidecar-queries", () => ({
   useChainStatus: () => chainQuery.current,
+  sidecarKeys: { all: ["sidecar", 50383] },
 }));
+
+// The market list stays pending: its own states are covered in landing-markets.test.tsx.
+vi.mock("@/hooks/use-perps-adapter", () => ({
+  getBrowserAdapter: () => ({ getMarketListing: () => new Promise(() => undefined) }),
+}));
+
+// The shared header reads the wallet; the landing only has to render it.
+vi.mock("@/components/chrome/global-header", () => ({
+  GlobalHeader: () => <SiteHeader />,
+}));
+
+const NO_RECORDS: LandingRecords = { state: "read", runs: [], recordedCount: 0 };
+
+function renderLanding(records: LandingRecords = NO_RECORDS): ReturnType<typeof render> {
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  const wrapper = ({ children }: { children: ReactNode }): ReactNode => <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+  return render(<LandingPage records={records} />, { wrapper });
+}
 
 vi.mock("@/hooks/use-trade-clock", () => ({
   useTradeClock: () => NOW_MS,
@@ -40,12 +64,12 @@ afterEach(() => {
 });
 
 describe("LandingPage", () => {
-  it("leads with the headline and sends the primary call to action to /trade", () => {
+  it("leads with the headline and sends the two calls to action to /trade and /start", () => {
     // #given
     chainQuery.current = liveHead();
 
     // #when
-    render(<LandingPage />);
+    renderLanding();
 
     // #then
     const heading = screen.getByRole("heading", { level: 1 });
@@ -56,14 +80,22 @@ describe("LandingPage", () => {
     const ctas = within(main).getAllByRole("link", { name: "Open the trade screen" });
     expect(ctas.length).toBeGreaterThan(0);
     for (const cta of ctas) expect(cta).toHaveAttribute("href", "/trade");
-    expect(within(main).getByRole("link", { name: "See a real Hideki fill, decoded" })).toHaveAttribute(
-      "href",
-      "/receipt/0xa71faaf75c1fa13abab1f1047b1049ae86477310761fbbafaf01a6bd0fd17259",
-    );
+    const starts = within(main).getAllByRole("link", { name: "Get started" });
+    expect(starts.length).toBeGreaterThan(0);
+    for (const start of starts) expect(start).toHaveAttribute("href", "/start");
+  });
 
-    const nav = screen.getByRole("navigation", { name: "Sidecar" });
-    expect(within(nav).getByRole("link", { name: "Trade" })).toHaveAttribute("href", "/trade");
-    expect(within(nav).getByRole("link", { name: "Proof" })).toHaveAttribute("href", "/proof");
+  it("numbers its eight chapters in order", () => {
+    // #given
+    chainQuery.current = liveHead();
+
+    // #when
+    renderLanding();
+
+    // #then
+    const sections = Array.from(screen.getByRole("main").querySelectorAll("section[aria-labelledby]"));
+    const numbers = sections.map((section) => section.querySelector("p > span.tabular")?.textContent);
+    expect(numbers).toEqual(["01", "02", "03", "04", "05", "06", "07", "08"]);
   });
 
   it("labels every illustrative figure as simulated, and only the live reads as chain", () => {
@@ -71,22 +103,32 @@ describe("LandingPage", () => {
     chainQuery.current = liveHead();
 
     // #when
-    const { container } = render(<LandingPage />);
+    const { container } = renderLanding();
 
-    // #then every badge outside the two live reads is SIMULATED
-    const networkLines = [
-      screen.getByRole("group", { name: "Network status" }),
+    // #then every badge outside the live reads is SIMULATED
+    const liveGroups = [
       screen.getByRole("group", { name: "Hideki head block" }),
+      screen.getByRole("group", { name: "Listed markets" }),
     ];
     const badges = Array.from(container.querySelectorAll<HTMLElement>("[data-provenance]"));
-    const outside = badges.filter((badge) => !networkLines.some((line) => line.contains(badge)));
+    const outside = badges.filter((badge) => !liveGroups.some((group) => group.contains(badge)));
     expect(outside.length).toBeGreaterThan(0);
     for (const badge of outside) expect(badge).toHaveAttribute("data-provenance", "simulated");
 
-    const inside = badges.filter((badge) => networkLines.some((line) => line.contains(badge)));
+    const inside = badges.filter((badge) => liveGroups.some((group) => group.contains(badge)));
     for (const badge of inside) expect(badge).toHaveAttribute("data-provenance", "chain");
 
     expect(screen.getByText(/Sample figures, not live state\./)).toBeInTheDocument();
+    expect(screen.getByText(/Sample figures for illustration, not live state\./)).toBeInTheDocument();
+  });
+
+  it("explains shared margin with simulated figures and never says separate margin is safe", () => {
+    chainQuery.current = liveHead();
+    renderLanding();
+    const chapter = within(screen.getByRole("heading", { name: /a losing trade draws on every position's margin/ }).closest("section") ?? document.body);
+    expect(chapter.getByText(/caps the damage at that account's own deposit/)).toBeInTheDocument();
+    expect(chapter.getByText(/either account can still be liquidated/)).toBeInTheDocument();
+    expect(chapter.queryByText(/\bsafe\b|protected|guarantee/i)).not.toBeInTheDocument();
   });
 
   it("lists the ten receipt checks without claiming any result", () => {
@@ -94,7 +136,7 @@ describe("LandingPage", () => {
     chainQuery.current = liveHead();
 
     // #when
-    render(<LandingPage />);
+    renderLanding();
 
     // #then
     const card = screen.getByRole("heading", { name: "Checks on every order" }).closest("article");
@@ -106,67 +148,76 @@ describe("LandingPage", () => {
     expect(scoped.queryByText("Pass")).not.toBeInTheDocument();
   });
 
-  it("states that the decoded fill was not sent by Sidecar", () => {
+  it("says no runs are recorded when the index holds none", () => {
     chainQuery.current = liveHead();
-    render(<LandingPage />);
-    expect(screen.getByText(/Someone else sent it, not Sidecar\./)).toBeInTheDocument();
+    renderLanding();
+    expect(screen.getByText(/No runs are recorded yet\./)).toBeInTheDocument();
   });
 
-  it("qualifies the fill link in the hero and never implies Sidecar has sent a live order", () => {
+  it("shows the gas floor from the order config in the getting started steps", () => {
     chainQuery.current = liveHead();
-    render(<LandingPage />);
-    expect(screen.getByText("Someone else sent that fill. Sidecar's own runs are on the proof page.")).toBeInTheDocument();
+    renderLanding();
+    expect(screen.getByText("At least 0.6 STT")).toBeInTheDocument();
   });
 
-  it("names the network status group once, so assistive tech hears one live line", () => {
+  it("leaves the network status line to the header, so assistive tech hears it once", () => {
+    // #given
     chainQuery.current = liveHead();
-    render(<LandingPage />);
-    expect(screen.getAllByRole("group", { name: "Network status" })).toHaveLength(1);
+
+    // #when
+    renderLanding();
+
+    // #then
+    expect(screen.getByRole("main").querySelectorAll("[aria-label='Network status']")).toHaveLength(0);
   });
 
   it("uses sample addresses nobody could mistake for a real wallet", () => {
     chainQuery.current = liveHead();
-    const { container } = render(<LandingPage />);
+    const { container } = renderLanding();
     const titled = Array.from(container.querySelectorAll<HTMLElement>("[title^='0x']"));
     expect(titled.length).toBeGreaterThan(0);
     for (const element of titled) expect(element.title).toMatch(/^0x(a{40}|b{40})$/);
   });
 });
 
-describe("LiveNetworkLine", () => {
+// The landing's live line is the header's: the same states, read through the same hook.
+function HeaderNetworkLine(): ReactNode {
+  const chain = useChainStatus();
+  return <NetworkMeta network={<NetworkStatus chain={chain} nowMs={NOW_MS} />} />;
+}
+
+describe("Header network line", () => {
   it("shows the chain id, the head block as a chain read, and its age", () => {
     // #given
     chainQuery.current = liveHead();
 
     // #when
-    render(<LiveNetworkLine />);
+    render(<HeaderNetworkLine />);
 
     // #then
-    const line = screen.getByRole("group", { name: "Network status" });
-    expect(line).toHaveTextContent("Live");
+    const line = screen.getByLabelText("Network status");
     expect(line).toHaveTextContent("Somnia Hideki Testnet · 50383");
     expect(line).toHaveTextContent(/Block\s*CHAIN · #38,357,692/);
     expect(line).toHaveTextContent("· 2s old");
+    expect(line).not.toHaveTextContent("Stale");
+    expect(line.querySelector("[data-provenance]")).toHaveAttribute("data-provenance", "chain");
   });
 
   it("marks a reading older than a minute as stale", () => {
     chainQuery.current = liveHead({ readAt: new Date(NOW_MS - 90_000).toISOString() });
-    render(<LiveNetworkLine />);
-    const line = screen.getByRole("group", { name: "Network status" });
-    expect(line).toHaveTextContent("Stale");
-    expect(line).not.toHaveTextContent("Live");
+    render(<HeaderNetworkLine />);
+    expect(screen.getByLabelText("Network status")).toHaveTextContent(/Stale\s*Block/);
   });
 
-  it("shows Unavailable with a reason, and no block number, when the read fails", () => {
+  it("says the network is unreachable, and shows no block number, when the read fails", () => {
     // #given
     chainQuery.current = { isPending: false, isError: true, error: new Error("fetch failed"), data: undefined };
 
     // #when
-    render(<LiveNetworkLine />);
+    render(<HeaderNetworkLine />);
 
     // #then
-    const line = screen.getByRole("group", { name: "Network status" });
-    expect(line).toHaveTextContent("Unavailable");
+    const line = screen.getByLabelText("Network status");
     expect(line).toHaveTextContent(/Network unreachable\./);
     expect(line).not.toHaveTextContent(/#\d/);
     expect(line.querySelector("[data-provenance]")).toBeNull();
@@ -174,15 +225,15 @@ describe("LiveNetworkLine", () => {
 
   it("names a wrong chain instead of showing it as live", () => {
     chainQuery.current = liveHead({ chainId: 1, matches: false });
-    render(<LiveNetworkLine />);
-    const line = screen.getByRole("group", { name: "Network status" });
+    render(<HeaderNetworkLine />);
+    const line = screen.getByLabelText("Network status");
     expect(line).toHaveTextContent("The RPC reports chain 1, not 50383.");
-    expect(line).not.toHaveTextContent("Live");
+    expect(line).not.toHaveTextContent(/#\d/);
   });
 
   it("is busy while the first read is in flight", () => {
     chainQuery.current = { isPending: true, isError: false, error: null, data: undefined };
-    render(<LiveNetworkLine />);
-    expect(screen.getByRole("group", { name: "Network status" })).toHaveAttribute("aria-busy", "true");
+    render(<HeaderNetworkLine />);
+    expect(screen.getByLabelText("Network status").querySelector("[aria-busy='true']")).not.toBeNull();
   });
 });
