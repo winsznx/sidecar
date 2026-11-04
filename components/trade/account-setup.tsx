@@ -60,10 +60,12 @@ function PasteAddressForm({
   role,
   book,
   save,
+  compact = false,
 }: {
   role: AccountRole;
   book: AccountBook;
   save: (book: AccountBook) => void;
+  compact?: boolean;
 }): ReactNode {
   const [address, setAddress] = useState("");
   const [label, setLabel] = useState("");
@@ -83,25 +85,35 @@ function PasteAddressForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3" aria-label={`Watch an address as account ${ROLE_LETTER[role]}`}>
-      <TextField
-        label="Address to watch"
-        value={address}
-        onChange={(event) => setAddress(event.target.value)}
-        placeholder="0x…"
-        autoComplete="off"
-        spellCheck={false}
-        inputClassName="type-data"
-        error={error ?? undefined}
-        hint="Watch-only: Sidecar reads it but never offers to sign for it."
-      />
-      <TextField
-        label="Label (optional)"
-        value={label}
-        maxLength={MAX_LABEL_LENGTH}
-        onChange={(event) => setLabel(event.target.value)}
-        placeholder={defaultLabel(role)}
-      />
-      <Button type="submit" variant="secondary" size="sm" leading={<Eye aria-hidden="true" className="size-3.5" />}>
+      <div className={compact ? "flex flex-wrap items-start gap-3" : "contents"}>
+        <TextField
+          label="Address to watch"
+          value={address}
+          onChange={(event) => setAddress(event.target.value)}
+          placeholder="0x…"
+          autoComplete="off"
+          spellCheck={false}
+          inputClassName="type-data"
+          error={error ?? undefined}
+          hint="Watch-only: Sidecar reads it but never offers to sign for it."
+          className={compact ? "flex-[2_1_14rem]" : undefined}
+        />
+        <TextField
+          label="Label (optional)"
+          value={label}
+          maxLength={MAX_LABEL_LENGTH}
+          onChange={(event) => setLabel(event.target.value)}
+          placeholder={defaultLabel(role)}
+          className={compact ? "flex-[1_1_9rem]" : undefined}
+        />
+      </div>
+      <Button
+        type="submit"
+        variant="secondary"
+        size="sm"
+        leading={<Eye aria-hidden="true" className="size-3.5" />}
+        className={compact ? "self-start" : undefined}
+      >
         Watch this address
       </Button>
     </form>
@@ -160,11 +172,11 @@ const PRIMARY_READS = [
   "STT for gas and USDso left in the wallet",
 ] as const;
 
-function PrimaryReads(): ReactNode {
+function PrimaryReads({ compact = false }: { compact?: boolean }): ReactNode {
   return (
     <div className="flex flex-col gap-2">
       <p className="text-caption text-ink-3">Once added, Sidecar reads from the chain</p>
-      <ul className="flex flex-col gap-1.5">
+      <ul className={compact ? "flex flex-wrap gap-x-5 gap-y-1" : "flex flex-col gap-1.5"}>
         {PRIMARY_READS.map((read) => (
           <li key={read} className="flex items-baseline gap-2 text-small text-ink-2">
             <span aria-hidden="true" className="size-1.5 shrink-0 translate-y-[-1px] rounded-full bg-account-a" />
@@ -181,11 +193,14 @@ function AccountSlot({
   book,
   save,
   wallet,
+  compact = false,
 }: {
   role: AccountRole;
   book: AccountBook;
   save: (book: AccountBook) => void;
   wallet: WalletState;
+  /** Shorter empty slot for a first visit, so the comparison stays in the first screen. */
+  compact?: boolean;
 }): ReactNode {
   const headingId = useId();
   const [editing, setEditing] = useState(false);
@@ -212,20 +227,21 @@ function AccountSlot({
       aria-labelledby={headingId}
       data-testid={`account-slot-${letter.toLowerCase()}`}
       className={cx(
-        "relative flex min-w-0 flex-col gap-4 overflow-hidden rounded-xl border bg-raised p-5 shadow-card",
+        "relative flex min-w-0 flex-col overflow-hidden rounded-xl border bg-raised shadow-card",
+        compact ? "gap-3 p-4 md:px-5" : "gap-4 p-5",
         identity === null ? "border-dashed border-line-strong" : "border-line",
       )}
     >
       <span aria-hidden="true" className={cx("absolute inset-x-0 top-0 h-1", letter === "A" ? "bg-account-a" : "bg-account-b")} />
       <div className="flex items-start gap-3">
         <AccountLetter account={letter} size="lg" />
-        <div className="flex min-w-0 flex-col gap-1">
+        <div className={cx("flex min-w-0 flex-col", compact ? "gap-0.5" : "gap-1")}>
           <h3 id={headingId} className="type-eyebrow text-ink-3">
             Account {letter} · {ROLE_COPY[role].name}
           </h3>
           {identity === null ? (
             <>
-              <p className="text-title font-semibold tracking-tight text-ink">{ROLE_COPY[role].empty}</p>
+              <p className={cx("font-semibold tracking-tight text-ink", compact ? "text-body" : "text-title")}>{ROLE_COPY[role].empty}</p>
               <p className="text-small text-ink-2">{ROLE_COPY[role].explain}</p>
             </>
           ) : null}
@@ -239,9 +255,11 @@ function AccountSlot({
             </Button>
           ) : null}
           {connected === null && role === "primary" ? (
-            <div className="flex flex-col gap-1.5">
-              <ConnectWalletButton wallet={wallet} size="md" tone="a" variant="primary" block />
-              <p className="text-caption text-ink-3">Connect the wallet that holds your positions. Sidecar can then sign for it.</p>
+            <div className={compact ? "flex flex-wrap items-center gap-x-4 gap-y-1.5" : "flex flex-col gap-1.5"}>
+              <ConnectWalletButton wallet={wallet} size="md" tone="a" variant="primary" block={!compact} />
+              <p className={cx("text-caption text-ink-3", compact && "min-w-48 flex-1")}>
+                Connect the wallet that holds your positions. Sidecar can then sign for it.
+              </p>
             </div>
           ) : null}
           {connected !== null && connectedIsOther ? (
@@ -252,19 +270,19 @@ function AccountSlot({
           ) : null}
           {role === "primary" && !(connected !== null && connectedIsOther) ? (
             <>
-              <PrimaryReads />
-              <details className="group mt-auto border-t border-dashed border-line-strong pt-3">
+              <PrimaryReads compact={compact} />
+              <details className={cx("group mt-auto border-t border-dashed border-line-strong", compact ? "pt-2.5" : "pt-3")}>
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-2 rounded-xs text-small font-medium text-ink-2 focus-ring hover:text-ink pointer-coarse:min-h-10 [&::-webkit-details-marker]:hidden">
                   Or watch an address instead
                   <ChevronDown aria-hidden="true" className="size-4 shrink-0 text-ink-3 transition-transform duration-fast group-open:rotate-180" />
                 </summary>
                 <div className="pt-3">
-                  <PasteAddressForm role={role} book={book} save={save} />
+                  <PasteAddressForm role={role} book={book} save={save} compact={compact} />
                 </div>
               </details>
             </>
           ) : (
-            <PasteAddressForm role={role} book={book} save={save} />
+            <PasteAddressForm role={role} book={book} save={save} compact={compact} />
           )}
         </>
       ) : (
@@ -358,18 +376,32 @@ export function AccountSetup({
       aria-labelledby={headingId}
       data-testid="account-setup"
       className={cx(
-        "flex min-w-0 flex-col gap-4",
-        complete ? "rounded-xl border border-line bg-panel px-4 py-3 shadow-card md:px-5" : "py-2",
+        "flex min-w-0 flex-col",
+        complete ? "gap-4 rounded-xl border border-line bg-panel px-4 py-3 shadow-card md:px-5" : empty ? "gap-3" : "gap-4 py-2",
       )}
     >
-      {complete ? null : (
+      {complete ? null : empty ? (
+        <div className="flex flex-col gap-1.5">
+          <h2 id={headingId} className="type-eyebrow text-ink-3">
+            Accounts
+          </h2>
+          {/* One row on wide screens: the note moves up here so the empty setup costs as little height as possible. */}
+          <div className="flex flex-col gap-x-10 gap-y-1 lg:flex-row lg:flex-wrap lg:items-baseline">
+            <p className="shrink-0 type-display text-heading text-ink">Start with two wallets.</p>
+            <p className="max-w-measure text-body text-ink-2">
+              Sidecar compares one order held in two places. A holds your positions, B gets its own margin. You pick per trade.
+            </p>
+            <p className="text-caption text-ink-3 lg:ml-auto">{SAVED_NOTE}</p>
+          </div>
+        </div>
+      ) : (
         <div className="flex flex-col gap-3">
           <h2 id={headingId} className="type-eyebrow text-ink-3">
             Accounts
           </h2>
           {/* Heading size, not display: the comparison's headline is the one display line on this screen. */}
           <p className="max-w-headline type-display text-heading text-ink md:text-display">
-            {empty ? "Start with two wallets." : book.primary === null ? "Add the wallet with your positions." : "Add the second wallet."}
+            {book.primary === null ? "Add the wallet with your positions." : "Add the second wallet."}
           </p>
           <p className="max-w-measure text-lead text-ink-2">
             Sidecar compares one order held in two places. A holds your positions, B gets its own margin. You pick per trade.
@@ -404,11 +436,11 @@ export function AccountSetup({
       ) : null}
       {expanded ? (
         <div id={slotsId} className="grid gap-4 md:grid-cols-2">
-          <AccountSlot role="primary" book={book} save={save} wallet={wallet} />
-          <AccountSlot role="separate" book={book} save={save} wallet={wallet} />
+          <AccountSlot role="primary" book={book} save={save} wallet={wallet} compact={empty} />
+          <AccountSlot role="separate" book={book} save={save} wallet={wallet} compact={empty} />
         </div>
       ) : null}
-      <p className="text-caption text-ink-3">{SAVED_NOTE}</p>
+      {empty ? null : <p className="text-caption text-ink-3">{SAVED_NOTE}</p>}
     </section>
   );
 }
