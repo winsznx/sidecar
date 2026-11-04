@@ -18,8 +18,10 @@ No environment variables are needed. `.env.example` lists the optional overrides
 
 Pages:
 
-- `/` is the landing page, with the live chain head and a fill decoded from a real Hideki receipt.
+- `/` is the landing page: why separate margin matters, how the comparison works, every listed market read live, Sidecar's own recorded runs, the receipt checks and the funding steps.
+- `/start` is a funding checklist for a fresh wallet: network, faucet, gas, USDso and margin, each read live from the connected wallet. It only reads.
 - `/trade` is the trade screen: accounts, positions, the order ticket, the shared-or-separate comparison, review and signing.
+- `/receipt` opens any Hideki transaction by hash and lists the recorded runs.
 - `/receipt/<txHash>` is a receipt for any perp order transaction, decoded from the chain receipt, with truth checks and account state before and after.
 - `/proof` shows the three runs of the live demo (shared margin in A, separate margin in B, A unchanged by B's trade) from `public/proof/index.json`, re-reads the chain from the browser on demand, and opens any Hideki receipt by hash.
 
@@ -135,9 +137,10 @@ Integration and end-to-end tests read the live testnet and send nothing. End-to-
 
 | Path | What lives there |
 | --- | --- |
-| `app/` | Routes: landing, `/trade`, `/receipt/[txHash]`, `/proof`, and the development-only `/dev/styleguide` |
+| `app/` | Routes: landing, `/start`, `/trade`, `/receipt`, `/receipt/[txHash]`, `/proof`, and the development-only `/dev/styleguide` |
+| `components/chrome/` | The header, network status and footer every page shares |
 | `components/ui/` | Design system primitives, documented in `docs/design-system.md` |
-| `components/trade/`, `components/evidence/`, `components/landing/` | Screens and their parts |
+| `components/trade/`, `components/evidence/`, `components/landing/`, `components/start/` | Screens and their parts |
 | `hooks/` | Client state: wallet, account book, quotes, execution, receipt reconciliation |
 | `lib/dreamdex/` | The adapter over the SDK, RPC and indexer: config, reads, deposits, receipt decoding and error mapping |
 | `lib/risk/`, `lib/orders/` | The shared-or-separate comparison, order validation and the order lifecycle |
