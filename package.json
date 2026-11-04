@@ -1,0 +1,79 @@
+{
+  "name": "sidecar",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Compare a perp trade in shared margin against a separate margin account, sign it, and check the result against the chain receipt. dreamDEX perps on Somnia Hideki testnet.",
+  "license": "MIT",
+  "author": "winsznx",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/winsznx/sidecar.git"
+  },
+  "bugs": {
+    "url": "https://github.com/winsznx/sidecar/issues"
+  },
+  "homepage": "https://github.com/winsznx/sidecar#readme",
+  "keywords": [
+    "dreamdex",
+    "somnia",
+    "perpetuals",
+    "margin",
+    "nextjs",
+    "wagmi",
+    "viem"
+  ],
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run --project unit --project ui",
+    "test:watch": "vitest --project unit --project ui",
+    "test:integration": "vitest run --project integration",
+    "test:e2e": "playwright test",
+    "doctor": "tsx scripts/doctor.ts",
+    "smoke:order": "tsx scripts/smoke-perp-order.ts",
+    "evidence:capture": "tsx scripts/evidence-capture.ts",
+    "verify": "npm run typecheck && npm run lint && npm run test && npm run build"
+  },
+  "dependencies": {
+    "@fontsource-variable/atkinson-hyperlegible-mono": "5.3.0",
+    "@fontsource-variable/atkinson-hyperlegible-next": "5.3.0",
+    "@fontsource-variable/pathway-extreme": "5.3.0",
+    "@somnia-chain/markets-sdk": "0.32.1",
+    "@somnia-chain/reactivity": "0.2.1",
+    "@tanstack/react-query": "5.105.0",
+    "@web3icons/react": "4.1.24",
+    "clsx": "2.1.1",
+    "lucide-react": "1.66.0",
+    "next": "16.4.3",
+    "radix-ui": "1.8.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "viem": "2.57.13",
+    "wagmi": "3.7.9"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@tailwindcss/turbopack": "^4",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.8",
+    "@types/node": "^24.19.2",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.1.2",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.3",
+    "jsdom": "^30.1.3",
+    "tailwindcss": "^4",
+    "tsx": "^4.23.15",
+    "typescript": "^5",
+    "vitest": "^5.0.5"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
