@@ -1,0 +1,120 @@
+{
+  "schema": "sidecar.proof-index.v1",
+  "updatedAt": "2026-11-03T20:20:39.021Z",
+  "records": [
+    {
+      "hash": "0x518c5317a21901191d085a03fe02e99184e787433cb14dc422670ee3d546e73c",
+      "account": "0xcC7F72954b83B51263De70d6e4011E595A144b3F",
+      "sender": "0xcC7F72954b83B51263De70d6e4011E595A144b3F",
+      "selectedGiven": true,
+      "selectedRole": "B",
+      "counterpart": "0xeD4267c10535B54283E3db2644F7585d015100db",
+      "market": "BTC-PERP",
+      "outcome": "FILLED",
+      "block": "40833611",
+      "capturedAt": "2026-11-03T20:20:39.018Z",
+      "file": "0x518c5317a21901191d085a03fe02e99184e787433cb14dc422670ee3d546e73c.json",
+      "chainId": 50383,
+      "canonical": true,
+      "checks": [
+        {
+          "id": "chain-id",
+          "status": "pass"
+        },
+        {
+          "id": "sender",
+          "status": "pass"
+        },
+        {
+          "id": "pool-listed",
+          "status": "pass"
+        },
+        {
+          "id": "margin-bank",
+          "status": "pass"
+        },
+        {
+          "id": "receipt-success",
+          "status": "pass"
+        },
+        {
+          "id": "placement-decoded",
+          "status": "pass"
+        },
+        {
+          "id": "calldata-intent",
+          "status": "unknown"
+        },
+        {
+          "id": "position-attribution",
+          "status": "pass"
+        },
+        {
+          "id": "collateral-attribution",
+          "status": "pass"
+        },
+        {
+          "id": "counterpart-isolation",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "hash": "0x910d0e21c09e6d3e908fb36b7071e09b7d97a84067ac839a480493914f7416bc",
+      "account": "0xeD4267c10535B54283E3db2644F7585d015100db",
+      "sender": "0xeD4267c10535B54283E3db2644F7585d015100db",
+      "selectedGiven": true,
+      "selectedRole": "A",
+      "counterpart": "0xcC7F72954b83B51263De70d6e4011E595A144b3F",
+      "market": "ETH-PERP",
+      "outcome": "FILLED",
+      "block": "40831547",
+      "capturedAt": "2026-11-03T20:20:22.282Z",
+      "file": "0x910d0e21c09e6d3e908fb36b7071e09b7d97a84067ac839a480493914f7416bc.json",
+      "chainId": 50383,
+      "canonical": true,
+      "checks": [
+        {
+          "id": "chain-id",
+          "status": "pass"
+        },
+        {
+          "id": "sender",
+          "status": "pass"
+        },
+        {
+          "id": "pool-listed",
+          "status": "pass"
+        },
+        {
+          "id": "margin-bank",
+          "status": "pass"
+        },
+        {
+          "id": "receipt-success",
+          "status": "pass"
+        },
+        {
+          "id": "placement-decoded",
+          "status": "pass"
+        },
+        {
+          "id": "calldata-intent",
+          "status": "unknown"
+        },
+        {
+          "id": "position-attribution",
+          "status": "pass"
+        },
+        {
+          "id": "collateral-attribution",
+          "status": "pass"
+        },
+        {
+          "id": "counterpart-isolation",
+          "status": "pass"
+        }
+      ]
+    }
+  ]
+}

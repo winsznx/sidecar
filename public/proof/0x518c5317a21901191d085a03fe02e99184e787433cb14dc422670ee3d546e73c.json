@@ -1,0 +1,207 @@
+{
+  "schema": "sidecar.proof.v1",
+  "kind": "recorded-execution",
+  "recordedAt": "2026-11-03T20:20:39.018Z",
+  "network": {
+    "chainId": 50383,
+    "rpcUrl": "https://api.hideki2.infra.testnet.somnia.network",
+    "wsUrl": "wss://api.hideki2.infra.testnet.somnia.network/ws",
+    "indexerUrl": "https://hideki-dev.smk.somnia.host/v1/graphql",
+    "explorerUrl": "https://explorer.testnet.somnia.network/tokyo",
+    "sdkVersion": "0.32.1",
+    "canonicalBlock": {
+      "number": "40833611",
+      "hash": "0x28913c33d902069d1eeec545a393b5eb6baf35d2dc20993df97655a6025800f9",
+      "defaultRpcHash": "0x28913c33d902069d1eeec545a393b5eb6baf35d2dc20993df97655a6025800f9",
+      "matches": true
+    }
+  },
+  "tx": {
+    "hash": "0x518c5317a21901191d085a03fe02e99184e787433cb14dc422670ee3d546e73c",
+    "explorerUrl": "https://explorer.testnet.somnia.network/tokyo/tx/0x518c5317a21901191d085a03fe02e99184e787433cb14dc422670ee3d546e73c",
+    "from": "0xcC7F72954b83B51263De70d6e4011E595A144b3F",
+    "to": "0x4181dd08E73BbCdd1Ba3E615A18f6abD941b94C0",
+    "block": "40833611",
+    "blockTimestamp": 1793737191,
+    "receiptStatus": "success",
+    "gasUsed": "2146986",
+    "feePaidWei": "12881916000000000"
+  },
+  "market": {
+    "pool": "0x4181dd08E73BbCdd1Ba3E615A18f6abD941b94C0",
+    "displaySymbol": "BTC-PERP",
+    "marginBank": "0x478769E1177C0773c43A593DCCc4Ad15F15F1394",
+    "baseDecimals": 8,
+    "quoteDecimals": 18
+  },
+  "requested": {
+    "side": "long",
+    "quantity": "13000",
+    "price": "78047300000000000000000",
+    "timeInForce": "IOC"
+  },
+  "outcome": "FILLED",
+  "orderId": "16325368505232963196977",
+  "filledQuantity": "13000",
+  "fills": [
+    {
+      "makerOrderId": "17376832917434407639087",
+      "takerOrderId": "16325368505232963196977",
+      "quantity": "13000",
+      "price": "77815100000000000000000"
+    }
+  ],
+  "revertReason": null,
+  "checks": [
+    {
+      "id": "chain-id",
+      "label": "Transaction is on Somnia Hideki (50383)",
+      "status": "pass",
+      "detail": "RPC chain id 50383; transaction chain id 50383."
+    },
+    {
+      "id": "sender",
+      "label": "Sent by the selected account",
+      "status": "pass",
+      "detail": "Sender 0xcC7F72954b83B51263De70d6e4011E595A144b3F; expected 0xcC7F72954b83B51263De70d6e4011E595A144b3F."
+    },
+    {
+      "id": "pool-listed",
+      "label": "Target is a listed perp market",
+      "status": "pass",
+      "detail": "BTC-PERP at 0x4181dd08E73BbCdd1Ba3E615A18f6abD941b94C0."
+    },
+    {
+      "id": "margin-bank",
+      "label": "Market settles on the expected MarginBank",
+      "status": "pass",
+      "detail": "The pool reports MarginBank 0x478769E1177C0773c43A593DCCc4Ad15F15F1394 at block 40833611; expected 0x478769E1177C0773c43A593DCCc4Ad15F15F1394."
+    },
+    {
+      "id": "receipt-success",
+      "label": "Receipt confirms success",
+      "status": "pass",
+      "detail": "Mined in block 40833611."
+    },
+    {
+      "id": "placement-decoded",
+      "label": "Order id and fills decoded from the receipt",
+      "status": "pass",
+      "detail": "Order 16325368505232963196977 is owned by the sender; 13000 of 13000 filled."
+    },
+    {
+      "id": "calldata-intent",
+      "label": "Calldata matches the intended order",
+      "status": "unknown",
+      "detail": "No local intent was supplied to compare."
+    },
+    {
+      "id": "position-attribution",
+      "label": "Position change belongs to the sender",
+      "status": "pass",
+      "detail": "The MarginBank updated the sender's position in this market."
+    },
+    {
+      "id": "collateral-attribution",
+      "label": "Only the sender's collateral backs the order",
+      "status": "pass",
+      "detail": "Every collateral lock and wallet top-up in this transaction is the sender's."
+    },
+    {
+      "id": "counterpart-isolation",
+      "label": "The other account's collateral did not fund this trade",
+      "status": "pass",
+      "detail": "No MarginBank event in this transaction names 0xeD4267c10535B54283E3db2644F7585d015100db."
+    }
+  ],
+  "marginEvents": [
+    {
+      "kind": "CollateralLocked",
+      "account": "0xcC7F72954b83B51263De70d6e4011E595A144b3F",
+      "pool": "0x4181dd08E73BbCdd1Ba3E615A18f6abD941b94C0",
+      "amount": "307392327670975625"
+    },
+    {
+      "kind": "CollateralUnlocked",
+      "account": "0xcC7F72954b83B51263De70d6e4011E595A144b3F",
+      "pool": "0x4181dd08E73BbCdd1Ba3E615A18f6abD941b94C0",
+      "amount": "307392327670975625"
+    },
+    {
+      "kind": "CollateralUnlocked",
+      "account": "0x8239544DB8718D75111e4AEedc42036742D22E68",
+      "pool": "0x4181dd08E73BbCdd1Ba3E615A18f6abD941b94C0",
+      "amount": "252899075000000000"
+    },
+    {
+      "kind": "PositionUpdated",
+      "account": "0xcC7F72954b83B51263De70d6e4011E595A144b3F",
+      "pool": "0x4181dd08E73BbCdd1Ba3E615A18f6abD941b94C0",
+      "newSize": "13000",
+      "avgEntryPrice": "77815100000000000000000",
+      "realizedPnl": "0"
+    },
+    {
+      "kind": "PositionUpdated",
+      "account": "0x8239544DB8718D75111e4AEedc42036742D22E68",
+      "pool": "0x4181dd08E73BbCdd1Ba3E615A18f6abD941b94C0",
+      "newSize": "-4994703000",
+      "avgEntryPrice": "77336219823859626005858",
+      "realizedPnl": "0"
+    }
+  ],
+  "accounts": [
+    {
+      "role": "selected",
+      "address": "0xcC7F72954b83B51263De70d6e4011E595A144b3F",
+      "before": {
+        "block": "40833610",
+        "equity": "20000000000000000000",
+        "lockedCollateral": "0",
+        "totalEquity": "20000000000000000000",
+        "openOrderCount": 0,
+        "gasBalance": "14995308612000000000",
+        "issues": [
+          "The SDK has no block-pinned position read: getPerpPosition and listPerpPositionAnalytics answer at head only."
+        ]
+      },
+      "after": {
+        "block": "40833611",
+        "equity": "19976447397329024375",
+        "lockedCollateral": "0",
+        "totalEquity": "19976447397329024375",
+        "openOrderCount": 0,
+        "gasBalance": "14982426696000000000",
+        "issues": [
+          "The SDK has no block-pinned position read: getPerpPosition and listPerpPositionAnalytics answer at head only."
+        ]
+      }
+    },
+    {
+      "role": "counterpart",
+      "address": "0xeD4267c10535B54283E3db2644F7585d015100db",
+      "before": {
+        "block": "40833610",
+        "equity": "20002892838215857570",
+        "lockedCollateral": "0",
+        "totalEquity": "20002892838215857570",
+        "openOrderCount": 0,
+        "gasBalance": "34972869728000000000",
+        "issues": [
+          "The SDK has no block-pinned position read: getPerpPosition and listPerpPositionAnalytics answer at head only."
+        ]
+      },
+      "after": {
+        "block": "40833611",
+        "equity": "20002892838215857570",
+        "lockedCollateral": "0",
+        "totalEquity": "20002892838215857570",
+        "openOrderCount": 0,
+        "gasBalance": "34972869728000000000",
+        "issues": [
+          "The SDK has no block-pinned position read: getPerpPosition and listPerpPositionAnalytics answer at head only."
+        ]
+      }
+    }
+  ]
+}
