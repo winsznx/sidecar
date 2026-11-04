@@ -1,0 +1,594 @@
+@import "tailwindcss";
+
+/*
+ * Sidecar tokens.
+ *
+ * Two surfaces share one set of semantic names. PAPER (warm off-white, blue-black ink, a faint
+ * dotted grid) is the default for the whole app. BAND is the same ink turned into a surface:
+ * the page's ink becomes the background and the page's paper becomes the ink. It is opted into
+ * with data-surface="band" (usually through the <Band> primitive) for the one dark moment a page
+ * gets. Components only use the semantic utilities below (bg-panel, text-ink-2,
+ * border-account-a-line ...), so a subtree switches surface without new classes.
+ *
+ * The marker (--sc-accent) is the only brand colour. It is a fill, never a text colour, so its
+ * text is always --sc-accent-ink and the pair passes on both surfaces.
+ *
+ * Contrast for every text/surface pair is listed in docs/design-system.md.
+ */
+
+:root,
+[data-surface="paper"] {
+  color-scheme: light;
+
+  --sc-canvas: #f2f1ec;
+  --sc-panel: #fbfaf7;
+  --sc-raised: #ffffff;
+  --sc-sunken: #f0eee9;
+  --sc-hover: #eae8e2;
+  --sc-line: #dddad3;
+  --sc-line-strong: #c3bfb6;
+  --sc-control: #767c86;
+
+  --sc-ink: #1b2232;
+  --sc-ink-2: #3d4656;
+  --sc-ink-3: #5a616e;
+  --sc-ink-4: #8a8f98;
+  --sc-ink-inverse: #fbfaf7;
+  --sc-key: #1b2232;
+  --sc-key-hover: #2c3547;
+
+  --sc-accent: #d5f04e;
+  --sc-accent-hover: #c9e63a;
+  --sc-accent-line: #74851a;
+  --sc-accent-ink: #1b2232;
+
+  --sc-account-a: #175d9b;
+  --sc-account-a-hover: #024c85;
+  --sc-account-a-soft: #dceaf8;
+  --sc-account-a-line: #4f84ba;
+  --sc-account-b: #7e3a88;
+  --sc-account-b-hover: #6a2c73;
+  --sc-account-b-soft: #f2e4f4;
+  --sc-account-b-line: #9f69a7;
+
+  --sc-long: #1f6f3d;
+  --sc-long-soft: #daeede;
+  --sc-short: #ac312c;
+  --sc-short-soft: #fce1dd;
+
+  --sc-positive: #1f6f3d;
+  --sc-positive-soft: #daeede;
+  --sc-warning: #8b5511;
+  --sc-warning-soft: #f6e6cb;
+  --sc-danger: #b02a2d;
+  --sc-danger-hover: #971a20;
+  --sc-danger-soft: #fce1de;
+
+  --sc-focus: #1b2232;
+  --sc-skeleton: #e7e4dd;
+  --sc-hatch: #cfcbc1;
+  --sc-grid-dot: #d0ccc2;
+  --sc-scrim: rgb(27 34 50 / 0.42);
+
+  --sc-shadow-raised: inset 0 1px 0 0 rgb(255 255 255 / 0.8), 0 1px 2px 0 rgb(27 34 50 / 0.07);
+  --sc-shadow-card: 0 1px 2px 0 rgb(27 34 50 / 0.05), 0 10px 28px -14px rgb(27 34 50 / 0.16);
+  --sc-shadow-float:
+    0 1px 2px 0 rgb(27 34 50 / 0.06), 0 18px 40px -18px rgb(27 34 50 / 0.26), 0 44px 80px -44px rgb(27 34 50 / 0.22);
+  --sc-shadow-button: inset 0 1px 0 0 rgb(255 255 255 / 0.14), 0 6px 14px -8px rgb(27 34 50 / 0.5);
+  --sc-shadow-overlay: 0 0 0 1px var(--sc-line), 0 28px 56px -18px rgb(27 34 50 / 0.32);
+  --sc-shadow-sticky: 0 -1px 0 0 var(--sc-line), 0 -16px 32px -20px rgb(27 34 50 / 0.24);
+}
+
+[data-surface="band"] {
+  color-scheme: dark;
+
+  --sc-canvas: #141a26;
+  --sc-panel: #1b2230;
+  --sc-raised: #232b3a;
+  --sc-sunken: #0f141e;
+  --sc-hover: #2a3343;
+  --sc-line: #2f3848;
+  --sc-line-strong: #465064;
+  --sc-control: #7d879a;
+
+  --sc-ink: #f2f1ec;
+  --sc-ink-2: #c9ccd2;
+  --sc-ink-3: #a0a6b0;
+  --sc-ink-4: #6d7484;
+  --sc-ink-inverse: #141a26;
+  --sc-key: #f2f1ec;
+  --sc-key-hover: #ffffff;
+
+  --sc-accent: #d5f04e;
+  --sc-accent-hover: #e1f76f;
+  --sc-accent-line: #d5f04e;
+  --sc-accent-ink: #1b2232;
+
+  --sc-account-a: #7eb9eb;
+  --sc-account-a-hover: #95caf8;
+  --sc-account-a-soft: #1a2d43;
+  --sc-account-a-line: #5288b4;
+  --sc-account-b: #d4a1dc;
+  --sc-account-b-hover: #e3b4ea;
+  --sc-account-b-soft: #33263f;
+  --sc-account-b-line: #a074a7;
+
+  --sc-long: #79cd91;
+  --sc-long-soft: #17311f;
+  --sc-short: #ed8176;
+  --sc-short-soft: #3f2227;
+
+  --sc-positive: #79cd91;
+  --sc-positive-soft: #17311f;
+  --sc-warning: #edbb64;
+  --sc-warning-soft: #372c17;
+  --sc-danger: #f47b74;
+  --sc-danger-hover: #fc928a;
+  --sc-danger-soft: #42212a;
+
+  --sc-focus: #f2f1ec;
+  --sc-skeleton: #232b3a;
+  --sc-hatch: #384256;
+  --sc-grid-dot: #333c4d;
+  --sc-scrim: rgb(8 11 18 / 0.72);
+
+  --sc-shadow-raised: inset 0 1px 0 0 rgb(242 241 236 / 0.05), 0 1px 2px 0 rgb(4 6 10 / 0.5);
+  --sc-shadow-card: inset 0 1px 0 0 rgb(242 241 236 / 0.04), 0 12px 28px -14px rgb(4 6 10 / 0.7);
+  --sc-shadow-float: inset 0 1px 0 0 rgb(242 241 236 / 0.06), 0 24px 48px -20px rgb(4 6 10 / 0.8);
+  --sc-shadow-button: inset 0 1px 0 0 rgb(255 255 255 / 0.3), 0 6px 14px -8px rgb(4 6 10 / 0.8);
+  --sc-shadow-overlay: 0 0 0 1px var(--sc-line), 0 24px 48px -12px rgb(4 6 10 / 0.75);
+  --sc-shadow-sticky: 0 -1px 0 0 var(--sc-line), 0 -18px 32px -18px rgb(4 6 10 / 0.75);
+}
+
+/* Colours resolve per element (inline), so a data-surface subtree re-themes itself. */
+@theme inline {
+  --color-*: initial;
+
+  --color-canvas: var(--sc-canvas);
+  --color-panel: var(--sc-panel);
+  --color-raised: var(--sc-raised);
+  --color-sunken: var(--sc-sunken);
+  --color-hover: var(--sc-hover);
+  --color-line: var(--sc-line);
+  --color-line-strong: var(--sc-line-strong);
+  --color-control: var(--sc-control);
+
+  --color-ink: var(--sc-ink);
+  --color-ink-2: var(--sc-ink-2);
+  --color-ink-3: var(--sc-ink-3);
+  --color-ink-4: var(--sc-ink-4);
+  --color-ink-inverse: var(--sc-ink-inverse);
+  --color-key: var(--sc-key);
+  --color-key-hover: var(--sc-key-hover);
+
+  --color-accent: var(--sc-accent);
+  --color-accent-hover: var(--sc-accent-hover);
+  --color-accent-line: var(--sc-accent-line);
+  --color-accent-ink: var(--sc-accent-ink);
+
+  --color-account-a: var(--sc-account-a);
+  --color-account-a-hover: var(--sc-account-a-hover);
+  --color-account-a-soft: var(--sc-account-a-soft);
+  --color-account-a-line: var(--sc-account-a-line);
+  --color-account-b: var(--sc-account-b);
+  --color-account-b-hover: var(--sc-account-b-hover);
+  --color-account-b-soft: var(--sc-account-b-soft);
+  --color-account-b-line: var(--sc-account-b-line);
+
+  --color-long: var(--sc-long);
+  --color-long-soft: var(--sc-long-soft);
+  --color-short: var(--sc-short);
+  --color-short-soft: var(--sc-short-soft);
+
+  --color-positive: var(--sc-positive);
+  --color-positive-soft: var(--sc-positive-soft);
+  --color-warning: var(--sc-warning);
+  --color-warning-soft: var(--sc-warning-soft);
+  --color-danger: var(--sc-danger);
+  --color-danger-hover: var(--sc-danger-hover);
+  --color-danger-soft: var(--sc-danger-soft);
+
+  --color-focus: var(--sc-focus);
+  --color-hatch: var(--sc-hatch);
+  --color-scrim: var(--sc-scrim);
+
+  --font-sans: var(--font-ui-face), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono-face), ui-monospace, "SF Mono", Menlo, monospace;
+  --font-display: var(--font-display-face), var(--font-ui-face), ui-sans-serif, sans-serif;
+
+  --shadow-*: initial;
+  --shadow-raised: var(--sc-shadow-raised);
+  --shadow-card: var(--sc-shadow-card);
+  --shadow-float: var(--sc-shadow-float);
+  --shadow-button: var(--sc-shadow-button);
+  --shadow-overlay: var(--sc-shadow-overlay);
+  --shadow-sticky: var(--sc-shadow-sticky);
+}
+
+@theme static {
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
+
+  --container-measure: 40rem;
+  --container-dialog: 30rem;
+  --container-sheet: 34rem;
+  --container-page: 90rem;
+  --container-headline: 18ch;
+
+  /*
+   * UI scale: 11 12 13 14 16 18 21 24, on a 2px line grid.
+   * Display scale: 36 and 48 fixed, then three fluid steps (section, xl, hero) that grow with the
+   * viewport. Fluid steps use rem + vw so browser zoom still scales them.
+   */
+  --text-*: initial;
+  --text-micro: 0.6875rem;
+  --text-micro--line-height: 1rem;
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.125rem;
+  --text-small: 0.8125rem;
+  --text-small--line-height: 1.25rem;
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.375rem;
+  --text-lead: 1rem;
+  --text-lead--line-height: 1.5rem;
+  --text-title: 1.125rem;
+  --text-title--line-height: 1.5rem;
+  --text-figure: 1.3125rem;
+  --text-figure--line-height: 1.625rem;
+  --text-heading: 1.5rem;
+  --text-heading--line-height: 1.875rem;
+  --text-display: 2.25rem;
+  --text-display--line-height: 2.5rem;
+  --text-display-lg: 3rem;
+  --text-display-lg--line-height: 3.125rem;
+  --text-section: clamp(2.25rem, 1.55rem + 2.6vw, 4rem);
+  --text-section--line-height: 1;
+  --text-display-xl: clamp(2.75rem, 1.7rem + 3.9vw, 5.5rem);
+  --text-display-xl--line-height: 0.96;
+  --text-hero: clamp(3.25rem, 1.6rem + 6.4vw, 8rem);
+  --text-hero--line-height: 0.92;
+
+  --tracking-*: initial;
+  --tracking-hero: -0.05em;
+  --tracking-display: -0.035em;
+  --tracking-tight: -0.015em;
+  --tracking-normal: 0em;
+  --tracking-label: 0.04em;
+  --tracking-eyebrow: 0.12em;
+
+  --leading-*: initial;
+  --leading-hero: 0.92;
+  --leading-display: 0.98;
+  --leading-tight: 1.1;
+  --leading-snug: 1.3;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.65;
+
+  /*
+   * Radius grows with the container: tags 4, controls 8, cards inside panels 12, panels and
+   * overlays 16, floating cards 22, bands 32.
+   */
+  --radius-*: initial;
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.375rem;
+  --radius-2xl: 2rem;
+
+  --transition-duration-fast: 120ms;
+  --transition-duration-base: 200ms;
+  --transition-duration-slow: 320ms;
+  --transition-duration-linger: 960ms;
+  --transition-duration-loop: 1600ms;
+
+  --ease-*: initial;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  --default-transition-duration: 200ms;
+  --default-transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+
+  --animate-*: initial;
+  --animate-flash: value-flash var(--transition-duration-linger) var(--ease-standard) 1;
+  --animate-shimmer: shimmer var(--transition-duration-loop) linear infinite;
+  --animate-sweep: sweep var(--transition-duration-loop) var(--ease-standard) infinite;
+  --animate-fade-in: fade-in var(--transition-duration-base) var(--ease-standard);
+  --animate-fade-out: fade-out var(--transition-duration-fast) var(--ease-exit);
+  --animate-dialog-in: dialog-in var(--transition-duration-base) var(--ease-standard);
+  --animate-sheet-in-right: sheet-in-right var(--transition-duration-slow) var(--ease-standard);
+  --animate-sheet-in-bottom: sheet-in-bottom var(--transition-duration-slow) var(--ease-standard);
+  --animate-stamp-in: stamp-in var(--transition-duration-slow) var(--ease-standard);
+
+  --z-index-*: initial;
+  --z-index-base: 0;
+  --z-index-raised: 10;
+  --z-index-sticky: 20;
+  --z-index-overlay: 40;
+  --z-index-modal: 50;
+  --z-index-popover: 60;
+  --z-index-toast: 70;
+}
+
+/* The root is paper, so "inside paper" means anywhere that is not inside a band. */
+@custom-variant paper (&:where([data-surface="paper"], [data-surface="paper"] *):not(:where([data-surface="band"], [data-surface="band"] *)));
+@custom-variant band (&:where([data-surface="band"], [data-surface="band"] *));
+
+@keyframes value-flash {
+  0%,
+  25% {
+    background-color: color-mix(in oklab, var(--sc-ink) 14%, transparent);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 160% 0;
+  }
+  to {
+    background-position: -60% 0;
+  }
+}
+
+@keyframes sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+/* Tailwind positions with the `translate` property, so these keyframes only touch `transform`. */
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.985);
+  }
+}
+
+@keyframes sheet-in-right {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+}
+
+@keyframes sheet-in-bottom {
+  from {
+    transform: translateY(32px);
+    opacity: 0;
+  }
+}
+
+@keyframes stamp-in {
+  from {
+    opacity: 0;
+    transform: scale(1.12);
+  }
+}
+
+@layer base {
+  html {
+    background-color: var(--sc-canvas);
+    color: var(--sc-ink);
+    font-family: var(--font-ui-face), ui-sans-serif, system-ui, sans-serif;
+    font-size: 100%;
+    font-variant-numeric: tabular-nums;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scrollbar-color: var(--sc-line-strong) transparent;
+  }
+
+  body {
+    min-height: 100dvh;
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+  }
+
+  [data-surface] {
+    background-color: var(--sc-canvas);
+    color: var(--sc-ink);
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--sc-accent) 80%, transparent);
+    color: var(--sc-accent-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--sc-focus);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 1ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* Text roles. Sizes still come from the text-* scale. */
+
+/*
+ * The display face has an optical-size axis; font-optical-sizing lets the browser pick the
+ * cut that matches the rendered size, so a 128px hero gets the tight display cut and a 24px
+ * heading keeps open counters.
+ */
+@utility type-display {
+  font-family: var(--font-display-face), var(--font-ui-face), ui-sans-serif, sans-serif;
+  font-optical-sizing: auto;
+  font-stretch: 92%;
+  font-weight: 640;
+  letter-spacing: var(--tracking-display);
+}
+
+@utility type-hero {
+  font-family: var(--font-display-face), var(--font-ui-face), ui-sans-serif, sans-serif;
+  font-optical-sizing: auto;
+  font-stretch: 88%;
+  font-weight: 650;
+  letter-spacing: var(--tracking-hero);
+  text-wrap: balance;
+}
+
+@utility type-eyebrow {
+  font-family: var(--font-mono-face), ui-monospace, monospace;
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
+  font-weight: 500;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+}
+
+@utility type-data {
+  font-family: var(--font-mono-face), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums slashed-zero;
+  letter-spacing: var(--tracking-normal);
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/*
+ * The marker stroke behind the one phrase a headline is about. It sits on the lower part of
+ * the line like a real highlighter and repeats on every wrapped line.
+ */
+@utility marker {
+  color: var(--sc-accent-ink);
+  background-color: transparent;
+  background-image: linear-gradient(
+    to bottom,
+    transparent 0 14%,
+    var(--sc-accent) 14% 94%,
+    transparent 94%
+  );
+  padding-inline: 0.08em;
+  margin-inline: -0.04em;
+  border-radius: 0.06em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* Hatch at 135deg means "no value". The 45deg, denser hatch marks simulated data. */
+
+@utility hatch {
+  background-image: repeating-linear-gradient(135deg, var(--sc-hatch) 0 1px, transparent 1px 7px);
+}
+
+@utility hatch-sim {
+  background-image: repeating-linear-gradient(45deg, var(--sc-hatch) 0 1.5px, transparent 1.5px 5px);
+}
+
+/* Provenance rules: the line under a figure says where it came from. */
+
+@utility rule-indexed {
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--sc-ink-3);
+  text-underline-offset: 0.28em;
+}
+
+@utility rule-estimate {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 1.5px;
+  text-decoration-color: var(--sc-ink-3);
+  text-underline-offset: 0.28em;
+}
+
+@utility rule-simulated {
+  padding-bottom: 0.3em;
+  background-image: repeating-linear-gradient(45deg, var(--sc-ink-3) 0 1px, transparent 1px 4px);
+  background-size: 100% 3px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+}
+
+@utility outline-estimate {
+  outline: 1px dashed var(--sc-control);
+  outline-offset: 3px;
+}
+
+/* The dotted paper. 20px pitch matches the 4px spacing step, so content can sit on the grid. */
+@utility paper-grid {
+  background-image: radial-gradient(circle at 1px 1px, var(--sc-grid-dot) 1px, transparent 1.5px);
+  background-size: 20px 20px;
+}
+
+@utility focus-ring {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+
+  &:focus-visible {
+    outline-color: var(--sc-focus);
+  }
+}
+
+/* Corner brackets for panels that frame live chain reads. */
+@utility viewfinder {
+  --vf-color: var(--sc-ink-4);
+  --vf-arm: 12px;
+  --vf-weight: 1.5px;
+  --vf-inset: 6px;
+  background-image:
+    linear-gradient(var(--vf-color), var(--vf-color)), linear-gradient(var(--vf-color), var(--vf-color)),
+    linear-gradient(var(--vf-color), var(--vf-color)), linear-gradient(var(--vf-color), var(--vf-color)),
+    linear-gradient(var(--vf-color), var(--vf-color)), linear-gradient(var(--vf-color), var(--vf-color)),
+    linear-gradient(var(--vf-color), var(--vf-color)), linear-gradient(var(--vf-color), var(--vf-color));
+  background-repeat: no-repeat;
+  background-size:
+    var(--vf-arm) var(--vf-weight), var(--vf-weight) var(--vf-arm),
+    var(--vf-arm) var(--vf-weight), var(--vf-weight) var(--vf-arm),
+    var(--vf-arm) var(--vf-weight), var(--vf-weight) var(--vf-arm),
+    var(--vf-arm) var(--vf-weight), var(--vf-weight) var(--vf-arm);
+  background-position:
+    top var(--vf-inset) left var(--vf-inset), top var(--vf-inset) left var(--vf-inset),
+    top var(--vf-inset) right var(--vf-inset), top var(--vf-inset) right var(--vf-inset),
+    bottom var(--vf-inset) left var(--vf-inset), bottom var(--vf-inset) left var(--vf-inset),
+    bottom var(--vf-inset) right var(--vf-inset), bottom var(--vf-inset) right var(--vf-inset);
+}
+
+@utility skeleton {
+  background-color: var(--sc-skeleton);
+  background-image: linear-gradient(
+    100deg,
+    transparent 20%,
+    color-mix(in oklab, var(--sc-ink) 7%, transparent) 50%,
+    transparent 80%
+  );
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: shimmer var(--transition-duration-loop) linear infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    background-image: none;
+    animation: none;
+  }
+}

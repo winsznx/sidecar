@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <style>
+    .body { fill: #1b2232; }
+    .car { fill: #d5f04e; stroke: #1b2232; stroke-width: 1; }
+    @media (prefers-color-scheme: dark) { .body { fill: #f2f1ec; } .car { stroke: none; } }
+  </style>
+  <rect class="body" x="1" y="1" width="10" height="10" rx="3"/>
+  <rect class="car" x="12" y="7" width="3" height="8" rx="1.5"/>
+</svg>
