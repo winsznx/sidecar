@@ -1,34 +1,28 @@
 "use client";
 
 import { RotateCw } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState, type FormEvent, type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { Band } from "@/components/ui/band";
-import { buttonClassName, Button } from "@/components/ui/button";
-import { InlineAlert } from "@/components/ui/inline-alert";
+import { Button } from "@/components/ui/button";
 import { KeyValueList, type KeyValueItem } from "@/components/ui/key-value-list";
 import { ProvenanceBadge } from "@/components/ui/provenance-badge";
 import { Accent, SectionHeading } from "@/components/ui/section-heading";
 import { Skeleton } from "@/components/ui/skeleton";
-import { StatusPill } from "@/components/ui/status-pill";
-import { TextField } from "@/components/ui/text-field";
 import { Unavailable } from "@/components/ui/unavailable";
 import { useAdapterTiming, useProofLiveChecks, type ProofLiveChecks } from "@/hooks/use-proof-checks";
 import { useProofIndex, type ProofIndexLookup } from "@/hooks/use-proof-index";
 import { HIDEKI_CHAIN_ID } from "@/lib/dreamdex/types";
-import { formatBlockNumber, shortAddress } from "@/lib/format/units";
 
 import { ExportJsonButton } from "./export-json-button";
 import { deriveJourneys, deriveProofRuns, type ProofRun } from "./journeys";
 import { liveChecksSummary, type LiveCheckRow } from "./live-checks";
 import { buildProofExport } from "./proof-export";
 import { PublicFillCard } from "./public-fill-card";
-import type { ProofIndexEntry } from "./proof-index";
-import { ProofRuns, receiptHref, type RecordsState } from "./proof-runs";
-import { outcomeWords } from "./receipt-format";
-import { formatIsoUtc, parseTxHashParam } from "./receipt-model";
+import { ProofRuns, type RecordsState } from "./proof-runs";
+import { formatIsoUtc } from "./receipt-model";
+import { RecordedRunList, RecordListAlerts } from "./receipt-lookup-records";
+import { ReceiptLookupForm } from "./receipt-lookup";
 
 function checkItem(row: LiveCheckRow): KeyValueItem {
   const base = { id: row.id, label: row.label };
@@ -154,23 +148,7 @@ function LiveRead({ live, exportJson }: { live: ProofLiveChecks; exportJson: () 
   );
 }
 
-/** Opens any Hideki transaction's receipt by hash. Invalid input is explained in place and never navigates. */
-function OpenReceiptForm(): ReactNode {
-  const router = useRouter();
-  const [value, setValue] = useState("");
-  const [error, setError] = useState<string | null>(null);
-
-  function handleSubmit(event: FormEvent<HTMLFormElement>): void {
-    event.preventDefault();
-    const parsed = parseTxHashParam(value);
-    if (!parsed.ok) {
-      setError(parsed.reason);
-      return;
-    }
-    setError(null);
-    router.push(`/receipt/${parsed.hash}`);
-  }
-
+function OpenReceiptSection(): ReactNode {
   return (
     <section aria-labelledby="proof-open" className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,34rem)] lg:gap-16">
       <SectionHeading
@@ -179,93 +157,10 @@ function OpenReceiptForm(): ReactNode {
         lede="Paste a Hideki transaction hash. Sidecar reads the receipt from the chain, decodes the order and runs the checks every Sidecar order has to pass."
       />
       <div className="flex flex-col gap-6 lg:pt-3">
-        <form onSubmit={handleSubmit} noValidate aria-labelledby="proof-open" className="flex flex-col gap-3 sm:flex-row sm:items-start">
-          <TextField
-            className="min-w-0 flex-1"
-            label="Transaction hash"
-            hint="0x followed by 64 hex characters."
-            placeholder="0x…"
-            autoComplete="off"
-            spellCheck={false}
-            inputClassName="type-data"
-            value={value}
-            onChange={(event) => {
-              setValue(event.target.value);
-              if (error !== null) setError(null);
-            }}
-            error={error ?? undefined}
-          />
-          <Button type="submit" variant="primary" className="sm:mt-6">
-            Open receipt
-          </Button>
-        </form>
+        <ReceiptLookupForm labelledBy="proof-open" />
       </div>
     </section>
   );
-}
-
-function RecordRow({ entry }: { entry: ProofIndexEntry }): ReactNode {
-  const failed = entry.checks.filter((check) => check.status === "fail" && !(entry.outcome === "REVERTED" && check.id === "receipt-success")).length;
-  return (
-    <li className="grid gap-x-6 gap-y-2 py-3 sm:grid-cols-[1fr_auto] sm:items-center">
-      <div className="flex min-w-0 flex-col gap-1">
-        <p className="flex flex-wrap items-center gap-2 text-body font-semibold text-ink">
-          {entry.market ?? "Unlisted target"}
-          <StatusPill size="sm" tone={entry.outcome === "REVERTED" ? "danger" : entry.outcome === "FILLED" || entry.outcome === "PARTIALLY_FILLED" ? "positive" : "warning"}>
-            {outcomeWords(entry.outcome)}
-          </StatusPill>
-        </p>
-        <p className="text-caption text-ink-2">
-          Captured {formatIsoUtc(entry.capturedAt)}. Block {formatBlockNumber(BigInt(entry.block))}, sent by {shortAddress(entry.sender)}
-          {entry.selectedGiven ? "" : ", no selected account was named at capture"}.
-          {failed > 0 ? <span className="text-danger"> {failed} check{failed === 1 ? "" : "s"} failed at capture.</span> : null}
-        </p>
-      </div>
-      <div className="flex flex-wrap items-center gap-2">
-        <Link href={receiptHref(entry)} className={buttonClassName({ variant: "secondary", size: "sm" })}>
-          Open receipt
-        </Link>
-        <a href={`/proof/${entry.file}`} className={buttonClassName({ variant: "ghost", size: "sm" })}>
-          Raw record
-        </a>
-      </div>
-    </li>
-  );
-}
-
-/** Problems with the record list itself. Shown above the runs so no card is read as settled while they stand. */
-function RecordListAlerts({ lookup, onReload, fetching }: { lookup: ProofIndexLookup; onReload: () => void; fetching: boolean }): ReactNode {
-  if (lookup.state === "error") {
-    return (
-      <InlineAlert
-        tone="danger"
-        title="The recorded list could not be read"
-        action={
-          <Button variant="secondary" size="sm" loading={fetching} onClick={onReload}>
-            Try again
-          </Button>
-        }
-      >
-        {lookup.reason}
-      </InlineAlert>
-    );
-  }
-  if (lookup.state === "invalid") {
-    return (
-      <InlineAlert tone="warning" title="The recorded list is malformed, so nothing from it is shown">
-        {lookup.reason}
-      </InlineAlert>
-    );
-  }
-  if (lookup.state === "ok" && lookup.rejected.length > 0) {
-    const rejected = lookup.rejected;
-    return (
-      <InlineAlert tone="warning" title={`${rejected.length} listed record${rejected.length === 1 ? " was" : "s were"} left out`}>
-        {rejected.map((row) => `Entry ${row.position + 1}: ${row.reason}.`).join(" ")}
-      </InlineAlert>
-    );
-  }
-  return null;
 }
 
 function recordsState(lookup: ProofIndexLookup): RecordsState {
@@ -336,7 +231,7 @@ export function ProofScreen(): ReactNode {
 
       <LiveRead live={live} exportJson={exportJson} />
 
-      <OpenReceiptForm />
+      <OpenReceiptSection />
 
       {entries.length > 0 ? (
         <section aria-labelledby="proof-records" className="flex flex-col gap-6">
@@ -345,18 +240,10 @@ export function ProofScreen(): ReactNode {
             title="Every recorded run"
             lede="Captured from Hideki and dated. Opening one reads its receipt from the chain again. It is not a new transaction."
           />
-          <ul className="flex flex-col divide-y divide-line border-y border-line">
-            {entries.map((entry) => (
-              <RecordRow key={entry.hash} entry={entry} />
-            ))}
-          </ul>
+          <RecordedRunList entries={entries} />
         </section>
       ) : null}
 
-      <footer className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t border-dashed border-line-strong pt-5 type-eyebrow text-ink-3">
-        <span>Somnia Hideki testnet, chain {HIDEKI_CHAIN_ID}</span>
-        <span>Paper funds only. This page reads, it never sends.</span>
-      </footer>
     </div>
   );
 }
