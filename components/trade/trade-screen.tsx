@@ -47,6 +47,10 @@ const KINDS: readonly RouteKind[] = ["shared", "separate"];
 // reads them: positions A, ticket, comparison, then everything about B and the scenario.
 const COLUMN = "flex min-w-0 flex-col gap-6 max-xl:contents xl:gap-8";
 const PAGE = "mx-auto flex w-full max-w-page flex-1 flex-col gap-6 px-4 pt-5 pb-8 md:px-8 md:pt-8";
+// The sign bar is sticky over the bottom of the viewport. Anything scrolled into view (keyboard
+// focus, an anchor jump, a validation error) stops above it instead of behind it. The values sit
+// just above the band's measured top: 126px on phones, 112px at its tallest from `md` up.
+const CLEAR_SIGN_BAR = "[&_*]:scroll-mb-40 md:[&_*]:scroll-mb-32";
 const GRID = "flex flex-col gap-6 xl:grid xl:grid-cols-[9fr_11fr] xl:items-start xl:gap-x-12";
 
 const ORDER = {
@@ -268,7 +272,7 @@ export function TradeScreen(): ReactNode {
         {announcement.assertive}
       </p>
 
-      <main className={PAGE}>
+      <main className={`${PAGE} ${CLEAR_SIGN_BAR}`}>
         <h1 className="sr-only">Trade: choose where the margin lives</h1>
         {wrongNetwork ? (
           <InlineAlert

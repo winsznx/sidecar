@@ -128,4 +128,15 @@ describe("SignBar", () => {
     await userEvent.click(cta);
     expect(onPlace).not.toHaveBeenCalled();
   });
+
+  it("keeps the full name on the calculations control when its visible label is shortened", () => {
+    // #given a bar whose desktop control shows a shorter label below xl
+    render(<SignBar comparison={compare()} selected="separate" blocker={undefined} onPlace={vi.fn()} walletAddress={SEPARATE_ADDRESS} chainAgeMs={2_000} />);
+
+    // #when the calculations controls are looked up by name
+    const controls = screen.getAllByRole("button", { name: "See exact calculations" });
+
+    // #then both the phone icon button and the desktop button answer to the full name
+    expect(controls).toHaveLength(2);
+  });
 });

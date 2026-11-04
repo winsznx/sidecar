@@ -185,7 +185,8 @@ export function SignBar({
           <Eyebrow index={4}>Sign</Eyebrow>
           <WalletCheck route={route} />
         </div>
-        <p className="hidden min-w-0 type-data text-caption text-ink-3 lg:block">
+        {/* The first thing to give way when the bar is tight: it truncates before any control wraps. */}
+        <p className="hidden min-w-0 flex-1 truncate type-data text-caption text-ink-3 lg:block">
           Hideki {HIDEKI_CHAIN_ID} · {chainRead.long} · paper funds only
         </p>
         <div className="flex items-start gap-2 md:ml-auto md:items-center">
@@ -198,8 +199,15 @@ export function SignBar({
           <div className="hidden md:block">
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="lg" leading={<Calculator aria-hidden="true" className="size-4" />}>
-                  See exact calculations
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  aria-label="See exact calculations"
+                  leading={<Calculator aria-hidden="true" className="size-4" />}
+                  className="whitespace-nowrap"
+                >
+                  <span className="xl:hidden">Calculations</span>
+                  <span className="max-xl:hidden">See exact calculations</span>
                 </Button>
               </SheetTrigger>
               <CalculationsSheet comparison={comparison} />
