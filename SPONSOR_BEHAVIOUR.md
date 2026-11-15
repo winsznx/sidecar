@@ -18,7 +18,8 @@ What dreamDEX perps on Somnia Hideki did when Sidecar used them, through `@somni
 
 - `previewPerpOrderMargin`, `getMaxPerpOrderSize` and `getMarginAccount` give the full margin picture (lock breakdown, IM, MM, close-out), so Sidecar doesn't need its own formula. (Live read.)
 - Equity, open orders and wallet balances can be read at a past block. Positions can't be read through the SDK at a past block. (Live read.)
-- The MarginBank lists 21 perp markets, all tradeable. (Live read, `npm run doctor`, 2026-11-01.)
+- The MarginBank listed 21 perp markets, all tradeable, on 2026-11-01. By 2026-11-15 the indexer listed 60 on the same MarginBank, including test and load-test pools the gates mark as not tradeable. (Live reads, `npm run doctor`.)
+- `listPerpMarkets()` returns 50 rows by default, newest first, and doesn't say when it truncated. Once 60 markets were listed, BTC and ETH dropped off the default page. Sidecar now asks for up to 500. (Live read, 2026-11-15.)
 - Indexed market rows type their numbers as strings, not bigints. (SDK types.)
 
 ## Explorer
