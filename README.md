@@ -131,6 +131,7 @@ Integration and end-to-end tests read the live testnet and send nothing. End-to-
 - The receipt is VERIFIED only in the browser that sent the order, because only that browser has the order Sidecar prepared before signing. Elsewhere it shows "Receipt checks pass" and names what was not compared.
 - A wallet speed-up or cancel shows as "Outcome unknown" until a receipt for a tracked hash arrives.
 - Saved accounts and in-flight orders live in this browser's localStorage. They hold addresses and labels, never keys.
+- Sidecar connects to browser wallets that announce themselves through EIP-6963, such as MetaMask or Rabby. There's no WalletConnect yet, so a phone without a wallet browser can read every page but can't sign.
 - Testnet only. Sidecar is not built or reviewed for mainnet funds.
 
 ## Project layout
