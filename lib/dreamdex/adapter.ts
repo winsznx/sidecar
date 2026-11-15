@@ -379,6 +379,12 @@ function mapProjection(liq: Extract<PerpLiquidationPreview, { priceable: true }>
   };
 }
 
+/**
+ * The SDK lists 50 markets by default, newest first. Hideki keeps adding test and new-asset pools,
+ * and on 2026-11-15 the 60 listed pushed BTC and ETH off the default page.
+ */
+export const MARKET_LISTING_LIMIT = 500;
+
 export function createPerpsAdapter(markets: SomniaMarkets, options: PerpsAdapterOptions = {}): PerpsAdapter {
   const network = options.network ?? NETWORK;
   const timing = options.timing ?? sharedTimingRecorder;
@@ -443,7 +449,7 @@ export function createPerpsAdapter(markets: SomniaMarkets, options: PerpsAdapter
 
   async function getMarketListing(): Promise<MarketListing> {
     const readAt = iso();
-    const indexed = await attempt(() => timed("listPerpMarkets", () => sdk().listPerpMarkets()));
+    const indexed = await attempt(() => timed("listPerpMarkets", () => sdk().listPerpMarkets({ limit: MARKET_LISTING_LIMIT })));
     let rows: PerpMarket[];
     let source: Source;
     let gates: Map<string, PerpPoolStatus> | null = null;

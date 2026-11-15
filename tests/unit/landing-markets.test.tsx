@@ -48,7 +48,7 @@ describe("LiveMarketList", () => {
     // #then
     const group = screen.getByRole("group", { name: "Listed markets" });
     expect(group).toHaveAttribute("aria-busy", "true");
-    expect(group).not.toHaveTextContent(/\d+ perp market/);
+    expect(group).not.toHaveTextContent(/\d+ open for trading/);
   });
 
   it("counts and lists every market from the read, with the indexed mark under an INDEXED badge", async () => {
@@ -60,7 +60,7 @@ describe("LiveMarketList", () => {
 
     // #then
     const group = screen.getByRole("group", { name: "Listed markets" });
-    expect(await within(group).findByText("perp markets listed", { exact: false })).toHaveTextContent("2 perp markets listed");
+    expect(await within(group).findByText("open for trading", { exact: false })).toHaveTextContent("2 open for trading");
     expect(group.querySelector("[data-provenance]")).toHaveAttribute("data-provenance", "indexer");
     const btc = within(group).getByText("BTC-PERP").closest("li");
     if (!(btc instanceof HTMLElement)) throw new Error("No BTC tile.");
@@ -77,7 +77,7 @@ describe("LiveMarketList", () => {
     listing.read = async () => ({ markets: [BTC], source: { kind: "chain", block: 41_000_000n, readAt: READ_AT, via: "listPerpPoolStatuses", pinned: false }, gates: { status: "ok", readAt: READ_AT, via: "listPerpPoolStatuses" } });
     renderList();
     const group = screen.getByRole("group", { name: "Listed markets" });
-    expect(await within(group).findByText("perp market listed", { exact: false })).toHaveTextContent("1 perp market listed");
+    expect(await within(group).findByText("open for trading", { exact: false })).toHaveTextContent("1 open for trading");
     expect(group).not.toHaveTextContent("Mark");
     expect(group.querySelector("[data-provenance]")).toHaveAttribute("data-provenance", "chain");
   });
@@ -93,6 +93,22 @@ describe("LiveMarketList", () => {
     const group = screen.getByRole("group", { name: "Listed markets" });
     expect(await within(group).findByText("Markets unavailable")).toBeInTheDocument();
     expect(group).toHaveTextContent(/The market list could not be read\./);
-    expect(group).not.toHaveTextContent(/\b0 perp market/);
+    expect(group).not.toHaveTextContent(/\b0 open for trading/);
+  });
+
+  it("folds markets that are listed but not open for trading under the tiles, and counts both", async () => {
+    // #given one open market and one the gates mark as not tradeable
+    const paused = marketFixture({ pool: "0x00000000000000000000000000000000000000aa", displaySymbol: "TEST-PERP", baseSymbol: "TEST", tradeable: false });
+    listing.read = async () => ({ markets: [BTC, paused], source: { kind: "indexer", readAt: READ_AT, via: "listPerpMarkets" }, gates: { status: "ok", readAt: READ_AT, via: "listPerpPoolStatuses" } });
+
+    // #when
+    renderList();
+
+    // #then the count names both, only the open market gets a tile, and the other stays readable
+    const group = screen.getByRole("group", { name: "Listed markets" });
+    expect(await within(group).findByText("1 more listed but not open for trading")).toBeInTheDocument();
+    expect(group).toHaveTextContent("1 open for trading of 2 listed");
+    expect(within(group).getAllByRole("listitem")).toHaveLength(1);
+    expect(group).toHaveTextContent("TEST-PERP");
   });
 });

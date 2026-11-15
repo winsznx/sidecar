@@ -44,7 +44,7 @@ function MarketTile({ market, source }: { market: MarketMeta; source: Source }):
   const mark = source.kind === "indexer" ? market.indexedMarkPrice : null;
   return (
     <li className="flex min-w-0 flex-col gap-2 rounded-lg border border-line bg-panel px-4 py-3 shadow-card">
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
         <TokenLabel symbol={market.displaySymbol} size={20} className="text-body font-semibold text-ink" />
         {gate !== null ? (
           <StatusPill size="sm" tone="warning" appearance="outline">
@@ -108,21 +108,42 @@ export function LiveMarketList(): ReactNode {
     body = <Unavailable reason="The listing answered with no perp markets. Nothing is shown until it lists one." />;
   } else {
     const { markets, source } = listing.data;
+    const open = markets.filter((market) => market.tradeable !== false);
+    const closed = markets.filter((market) => market.tradeable === false);
     summary = (
       <>
         <span className="text-body font-medium text-ink">
-          <span className={provenanceRuleClass(source.kind)}>{markets.length}</span> perp market{markets.length === 1 ? "" : "s"} listed
+          <span className={provenanceRuleClass(source.kind)}>{open.length}</span> open for trading
+          {closed.length > 0 ? (
+            <span className="text-ink-2">
+              {" "}
+              of <span className={provenanceRuleClass(source.kind)}>{markets.length}</span> listed
+            </span>
+          ) : null}
         </span>
         <ProvenanceBadge source={source} size="sm" />
         <span className="text-caption text-ink-3">{source.kind === "indexer" ? "Marks and ticks" : "Ticks"} in USDso, sizes in the base token</span>
       </>
     );
+    // Listings include test and paused pools. They stay visible, folded, so the count above is checkable.
     body = (
-      <ul className={GRID}>
-        {markets.map((market) => (
-          <MarketTile key={market.pool} market={market} source={source} />
-        ))}
-      </ul>
+      <>
+        <ul className={GRID}>
+          {open.map((market) => (
+            <MarketTile key={market.pool} market={market} source={source} />
+          ))}
+        </ul>
+        {closed.length > 0 ? (
+          <details className="text-small text-ink-2">
+            <summary className="cursor-pointer rounded-xs focus-ring">
+              {closed.length} more listed but not open for trading
+            </summary>
+            <p className="mt-2 [overflow-wrap:anywhere] type-data text-caption text-ink-3">
+              {closed.map((market) => market.displaySymbol).join(" · ")}
+            </p>
+          </details>
+        ) : null}
+      </>
     );
   }
 
