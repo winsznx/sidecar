@@ -1,5 +1,7 @@
 # Sidecar
 
+[![CI](https://github.com/winsznx/sidecar/actions/workflows/ci.yml/badge.svg)](https://github.com/winsznx/sidecar/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-black.svg)](LICENSE) [![Live on Hideki](https://img.shields.io/badge/live-sidecar--virid.vercel.app-d5f04e.svg)](https://sidecar-virid.vercel.app)
+
 Sidecar shows the same perp order placed two ways, side by side: in your current margin account, where it shares collateral with your open positions, or in a second wallet with its own margin. You pick one, review it, sign it, and Sidecar checks the result against the chain receipt.
 
 It runs on the Somnia Hideki testnet against dreamDEX perps. Testnet funds only.
