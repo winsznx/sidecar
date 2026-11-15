@@ -4,6 +4,8 @@ Sidecar shows the same perp order placed two ways, side by side: in your current
 
 It runs on the Somnia Hideki testnet against dreamDEX perps. Testnet funds only.
 
+Live: https://sidecar-virid.vercel.app · Recorded runs: https://sidecar-virid.vercel.app/proof · New wallet: https://sidecar-virid.vercel.app/start
+
 ## Quick start
 
 Requires Node 22 or later.
