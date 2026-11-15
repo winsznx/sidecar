@@ -6,7 +6,7 @@ Sidecar shows the same perp order placed two ways, side by side: in your current
 
 It runs on the Somnia Hideki testnet against dreamDEX perps. Testnet funds only.
 
-Live: https://sidecar-virid.vercel.app · Recorded runs: https://sidecar-virid.vercel.app/proof · New wallet: https://sidecar-virid.vercel.app/start
+Live: https://sidecar-virid.vercel.app · Demo: https://youtu.be/eSLD3V1O8DI · Recorded runs: https://sidecar-virid.vercel.app/proof · New wallet: https://sidecar-virid.vercel.app/start
 
 ## Quick start
 
@@ -156,9 +156,8 @@ Integration and end-to-end tests read the live testnet and send nothing. End-to-
 
 MIT. See [LICENSE](LICENSE).
 
-## X posts
+## Demo and posts
 
-Posts about the build tag @DreamDEXSomnia. Links are added here once published.
-
-- Launch post: not yet published
-- Live run with receipts: not yet published
+- Demo video (2:33): https://youtu.be/eSLD3V1O8DI
+- Launch post: https://x.com/winsznlabs/status/2121970716299903362
+- Live run with receipts: https://x.com/winsznlabs/status/2121970721060733329
