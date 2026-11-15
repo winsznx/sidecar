@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { TradeScreen, TradeScreenFallback } from "@/components/trade/trade-screen";
 
 export const metadata: Metadata = {
-  title: "Trade | Sidecar",
+  title: "Trade",
   description: "Compare sharing collateral with your positions against a separate margin account, then place the order.",
 };
 

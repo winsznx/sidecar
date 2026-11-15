@@ -5,7 +5,7 @@ import { EvidenceShell } from "@/components/evidence/evidence-shell";
 import { ProofScreen } from "@/components/evidence/proof-screen";
 
 export const metadata: Metadata = {
-  title: "Proof | Sidecar",
+  title: "Proof",
   description: "Live checks against Somnia Hideki and Sidecar's recorded executions.",
 };
 

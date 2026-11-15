@@ -6,7 +6,7 @@ import { ReceiptScreen } from "@/components/evidence/receipt-screen";
 import { ReceiptSkeleton } from "@/components/evidence/receipt-states";
 
 export const metadata: Metadata = {
-  title: "Order receipt | Sidecar",
+  title: "Order receipt",
   description: "A perp order reconciled from Somnia Hideki chain reads.",
 };
 

@@ -5,7 +5,7 @@ import { EvidenceShell } from "@/components/evidence/evidence-shell";
 import { ReceiptLookupScreen } from "@/components/evidence/receipt-lookup-screen";
 
 export const metadata: Metadata = {
-  title: "Receipts | Sidecar",
+  title: "Receipts",
   description: "Open any Somnia Hideki perp order receipt by hash, or one of Sidecar's recorded runs.",
 };
 
