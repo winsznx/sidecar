@@ -55,6 +55,11 @@ function FixButtons({
   );
 }
 
+/** The listing is newest first, so freshly added test pools would otherwise head the picker. */
+export function openMarketsFirst(markets: readonly MarketMeta[]): MarketMeta[] {
+  return [...markets.filter((market) => market.tradeable !== false), ...markets.filter((market) => market.tradeable === false)];
+}
+
 function bookSource(book: BookTopReading): Source {
   return { kind: "chain", block: book.block, readAt: book.readAt, via: "getBookTopsOnchain" };
 }
@@ -184,7 +189,7 @@ export function OrderTicket({
           </InlineAlert>
         ) : null}
         <div className="grid gap-3 sm:grid-cols-2">
-          <MarketPicker markets={markets} market={market} onSelect={ticket.selectMarket} disabled={locked} />
+          <MarketPicker markets={openMarketsFirst(markets)} market={market} onSelect={ticket.selectMarket} disabled={locked} />
           <div className="flex min-w-0 flex-col gap-1.5">
             <span className="text-caption font-medium text-ink-2" id={`${tifHelpId}-side`}>
               Side
